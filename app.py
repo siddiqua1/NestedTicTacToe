@@ -16,9 +16,22 @@ init(num_tiles):
 
 '''
 
+def reg_board_maker() -> Board:
+    big = Board()
+    for i in range(9):
+        big.sub_board.append(Board())
+    return big
+
+def meta_board_maker(func) -> Board:
+    meta = Board()
+    for i in range(9):
+        meta.sub_board.append(func())
+    return meta
+
 if __name__ == '__main__':
-    potato = Board()
-    if potato.set(4, 2, verbose=True):
+    potato = meta_board_maker(lambda: meta_board_maker(Board))
+    print(f'Created board has {potato.get_cell_count()} cells')
+    if potato.set(2, [3, 3], verbose=True):
         print(potato)
     else:
         print("Fail")
