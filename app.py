@@ -35,12 +35,14 @@ if __name__ == '__main__':
     potato = meta_board_maker(lambda: Board())
     potato = meta_board_maker(lambda: meta_board_maker(lambda: Board()))
     #potato = meta_board_maker(lambda: meta_board_maker(lambda: meta_board_maker(Board)))
-    potato.sub_board[7].value = 1
-    potato.sub_board[5].value = 1
-    potato.sub_board[8].sub_board[1].value = 2
+    #potato.sub_board[7].value = 1
+    #potato.sub_board[5].value = 1
+    #potato.sub_board[8].sub_board[1].value = 2
     print(f'Created board has {potato.get_cell_count()} cells')
     #print(potato)
-    if potato.set(2, [3, 3], verbose=True):
-        print(potato)
-    else:
-        print("Fail")
+    for r in range(3, 6):
+        for c in range (3,6):
+            if potato.set(2, [r, c], verbose=True):
+                print(potato)
+            else:
+                print("Fail")

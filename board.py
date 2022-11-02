@@ -54,7 +54,32 @@ class Board:
         return builder
 
     def winner_update(self):
-        pass
+        if not self.sub_board:
+            return
+        for sub in self.sub_board:
+            sub.winner_update()
+        for r in range(3): 
+            if (self.sub_board[3*r].value != 0 and 
+            self.sub_board[3*r].value == self.sub_board[3*r + 1].value and 
+            self.sub_board[3*r].value == self.sub_board[3*r + 2].value):
+                self.value = self.sub_board[3*r].value
+                return
+        for c in range(3): 
+            if (self.sub_board[c].value != 0 and 
+            self.sub_board[c].value == self.sub_board[c + 3].value and 
+            self.sub_board[c].value == self.sub_board[c + 6].value):
+                self.value = self.sub_board[c].value
+                return
+        if (self.sub_board[0].value != 0 and 
+            self.sub_board[0].value == self.sub_board[4].value and 
+            self.sub_board[0].value == self.sub_board[8].value):
+            self.value = self.sub_board[0].value
+            return
+        if (self.sub_board[2].value != 0 and 
+            self.sub_board[2].value == self.sub_board[4].value and 
+            self.sub_board[2].value == self.sub_board[6].value):
+            self.value = self.sub_board[2].value
+            return
 
     def get_cell_count(self) -> int:
         b = self.rec_board_builder()
