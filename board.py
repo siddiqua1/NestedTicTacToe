@@ -1,6 +1,6 @@
 class Board:
 
-    int_to_str = {0 : " ", 1 : "X", 2 : "O"}
+    int_to_str = {0 : "*", 1 : "X", 2 : "O"}
 
     def __init__(self):
         self.value : int = 0
@@ -24,13 +24,33 @@ class Board:
             self.winner_update()
         return res
 
-    def rec_board_builder(self) -> list[int]:
+    def rec_board_builder(self, factor = 3) -> list[int]:
         builder = []
         if not self.sub_board:
-            builder.append(str(self.value)) #TODO: Change to board element
+            builder.append(self.int_to_str.get(self.value, "?")) 
             return builder
         for sub in self.sub_board:
             builder = builder + sub.rec_board_builder()
+        
+
+        if self.value != 0:
+            tmp = ['-' for i in range(len(builder))]
+            tmp[int(len(builder)//2) ] = self.int_to_str.get(self.value, "?")
+            builder = tmp
+        else: 
+            #rearrange
+            n = int(len(builder) / (factor*factor))
+            row_number = int(n**0.5)
+            if row_number == 0:
+                return builder
+            tmp2 = []
+            #print(f'row_number: {row_number} n: {n}')
+            for r in range(factor):
+                for rr in range(row_number):
+                    for c in range(factor):
+                        row_start = (r*n*factor + c*n + rr * int(n**0.5))
+                        tmp2 += builder[row_start:row_start+row_number]
+            builder = tmp2
         return builder
 
     def winner_update(self):
@@ -39,77 +59,20 @@ class Board:
     def get_cell_count(self) -> int:
         b = self.rec_board_builder()
         return len(b)
-        
-    def __repr__(self) -> str:
+
+    def get_depth(self) -> int:
+        '''
+        Assumes that the board is constructed evenly
+        '''
+        if not self.sub_board:
+            return 0
+        return 1 + self.sub_board[0].get_depth()
+
+    def __repr__(self, board_factor = 3) -> str:
         b = self.rec_board_builder()
+        #TODO: Rearrange better
+        rt = int(len(b)**0.5)
+        if len(b) == rt*rt:
+            for i in range(rt):
+                b.insert(i * (rt + 1), "\n")
         return " ".join(b)
-
-class Board2:
-    '''
-    Board for one instance of tic tac toe
-    '''
-
-    def __init__(self):
-        self.tiles = [0 for i in range(9)]
-        self.resolved = False
-        self.winner = 0
-
-    def reset(self):
-        '''
-        Resets the board to its original state
-        '''
-        self.tiles = [0 for i in range(9)]
-        self.winner = 0
-
-    def set(self, loc, cell, verbose = False) -> bool:
-        '''
-        Function that sets a location on a board to belong to the player passed in.
-        Returns `False` when failing to do so.
-        '''
-        if self.winner != 0:
-            if verbose:
-                print("[Failed to set] Board is resolved")
-            return False
-        if loc < 0 or loc > 8:
-            if verbose:
-                print(f"[Failed to set] Location {loc} is not in bounds")
-            return False
-        if self.tiles[loc] != 0:
-            if verbose:
-                print(f"[Failed to set] Location {loc} is already set to {self.tiles[loc]}")
-            return False
-        if cell != 1 and cell != 2:
-            if verbose:
-                print(f"[Failed to set] Value {cell} is not a valid player")
-            return False
-        self.tiles[loc] = cell
-        self.update_for_winner()
-        return True
-
-    def update_for_winner(self):
-        '''
-        Updates the board to see if anyone won the game
-        '''
-
-
-
-    def tile_to_string(self, tile):
-        if tile == 0:
-            return " "
-        elif tile == 1:
-            return "X"
-        elif tile == 2:
-            return "O"
-        return tile.winner
-        
-    def __repr__(self):
-        sb = []
-        for i, tile in enumerate(self.tiles):
-            if i % 3 != 2:
-                sb.append(f' {self.tile_to_string(tile)} |')
-            else:
-                if i == 8:
-                    sb.append(f' {self.tile_to_string(tile)} \n')
-                else:
-                    sb.append(f' {self.tile_to_string(tile)} \n-----------\n')
-        return ''.join(sb)

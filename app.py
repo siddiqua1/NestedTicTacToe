@@ -28,9 +28,18 @@ def meta_board_maker(func) -> Board:
         meta.sub_board.append(func())
     return meta
 
+
+
 if __name__ == '__main__':
-    potato = meta_board_maker(lambda: meta_board_maker(Board))
+    potato = Board()
+    potato = meta_board_maker(lambda: Board())
+    potato = meta_board_maker(lambda: meta_board_maker(lambda: Board()))
+    #potato = meta_board_maker(lambda: meta_board_maker(lambda: meta_board_maker(Board)))
+    potato.sub_board[7].value = 1
+    potato.sub_board[5].value = 1
+    potato.sub_board[8].sub_board[1].value = 2
     print(f'Created board has {potato.get_cell_count()} cells')
+    #print(potato)
     if potato.set(2, [3, 3], verbose=True):
         print(potato)
     else:
