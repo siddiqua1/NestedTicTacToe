@@ -5,6 +5,7 @@ class Board:
     def __init__(self):
         self.value : int = 0
         self.sub_board : list[Board] = []
+        self.filled = 0
 
     def reset(self):
         self.value = 0
@@ -14,14 +15,19 @@ class Board:
     def set(self, value : int, loc : list[int], verbose : bool = False) -> bool:
         if value > 3 or value < 0:
             return False
+        if self.value != 0:
+            return False
         if len(loc) == 0:
-            if not self.sub_board:
+            if not self.sub_board and self.value == 0:
                 self.value = value
                 return True
             return False
         res = self.sub_board[loc[0]].set(value, loc[1:], verbose=verbose)
         if res:
             self.winner_update()
+            self.filled += 1
+        if self.filled == len(self.sub_board) and self.value == 0:
+            self.reset()
         return res
 
     def rec_board_builder(self, factor = 3) -> list[int]:
@@ -53,9 +59,9 @@ class Board:
             builder = tmp2
         return builder
 
-    def winner_update(self):
+    def winner_update(self) -> bool:
         if not self.sub_board:
-            return
+            return False
         for sub in self.sub_board:
             sub.winner_update()
         for r in range(3): 
@@ -63,23 +69,23 @@ class Board:
             self.sub_board[3*r].value == self.sub_board[3*r + 1].value and 
             self.sub_board[3*r].value == self.sub_board[3*r + 2].value):
                 self.value = self.sub_board[3*r].value
-                return
+                return True
         for c in range(3): 
             if (self.sub_board[c].value != 0 and 
             self.sub_board[c].value == self.sub_board[c + 3].value and 
             self.sub_board[c].value == self.sub_board[c + 6].value):
                 self.value = self.sub_board[c].value
-                return
+                return True
         if (self.sub_board[0].value != 0 and 
             self.sub_board[0].value == self.sub_board[4].value and 
             self.sub_board[0].value == self.sub_board[8].value):
             self.value = self.sub_board[0].value
-            return
+            return True
         if (self.sub_board[2].value != 0 and 
             self.sub_board[2].value == self.sub_board[4].value and 
             self.sub_board[2].value == self.sub_board[6].value):
             self.value = self.sub_board[2].value
-            return
+            return True
 
     def get_cell_count(self) -> int:
         b = self.rec_board_builder()

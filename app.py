@@ -1,5 +1,5 @@
 from board import Board
-
+from game import Game
 '''
 Ideation:
 since this is a meta game maybe itll be cleaner to define a object board that has 
@@ -29,8 +29,7 @@ def meta_board_maker(func) -> Board:
     return meta
 
 
-
-if __name__ == '__main__':
+def test():
     potato = Board()
     potato = meta_board_maker(lambda: Board())
     potato = meta_board_maker(lambda: meta_board_maker(lambda: Board()))
@@ -46,3 +45,40 @@ if __name__ == '__main__':
                 print(potato)
             else:
                 print("Fail")
+
+def sanitize_input() -> int:
+    try:
+        num = int(input())
+    except Exception:
+        num = -1
+    if num > 0 and num < 10:
+        return num - 1
+    return -1
+
+def game_loop():
+    game = Game()
+    while True:
+        print(game)
+        print(f"\nIt is player {game.get_player()}'s turn.\n")
+        
+        row = -1
+        while row == -1:
+            print(f"Input row (1-9): ")
+            row = sanitize_input()
+            print()
+        col = -1
+        while col == -1:
+            print(f"Input col (1-9): ")
+            col = sanitize_input()
+            print()
+        res = game.rc_to_set(row, col)
+        if not res:
+            print(f"Player {game.get_player()}'s move is invalid, try again")
+        
+        if game.get_winner() > 0:
+            player = "X" if game.get_winner() == 1 else "O"
+            print(f"Player {player} has won the game!")
+            break
+
+if __name__ == '__main__':
+    game_loop()
