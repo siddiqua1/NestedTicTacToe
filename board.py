@@ -5,7 +5,6 @@ class Board:
     def __init__(self):
         self.value : int = 0
         self.sub_board : list[Board] = []
-        self.filled = 0
 
     def reset(self):
         self.value = 0
@@ -25,8 +24,11 @@ class Board:
         res = self.sub_board[loc[0]].set(value, loc[1:], verbose=verbose)
         if res:
             self.winner_update()
-            self.filled += 1
-        if self.filled == len(self.sub_board) and self.value == 0:
+        filled = 0
+        for b in self.sub_board:
+            if b.value > 0:
+                filled += 1
+        if filled == len(self.sub_board) and self.value == 0:
             self.reset()
         return res
 

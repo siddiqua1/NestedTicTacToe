@@ -47,13 +47,8 @@ class Game:
         res = []
         for i, sub in enumerate(self.board.sub_board):
             for j, cell in enumerate(sub.sub_board):
-                if cell.value == 0:
+                if cell.value == 0 and sub.value == 0:
                     res.append(9*i + j)
         return res
         
     
-    def check_for_reset(self):
-        #TODO: after each set, need to check for whether any subboard results in a tie, and if so reset that board
-        for i, sub in enumerate(self.board.sub_board):
-            
-            pass
